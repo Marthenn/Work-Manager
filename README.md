@@ -1,4 +1,4 @@
-# Work Manager CLI
+# Work Manager
 
 A simple, powerful command-line tool for Ubuntu to track your work hours and manage a to-do list directly from the terminal.
 
@@ -45,6 +45,7 @@ For the best experience, create an alias in your `~/.bashrc` to run the script w
 alias work='python3 /path/to/your/work.py'
 ```
 Then run source ~/.bashrc to apply the changes to your current terminal
+
 4. **Install the service:**:
 - Modify the `work-manager.service` file to include the absolute path to your `work.py` script in the `ExecStop` line
 - **Important**: The `ExecStop` command must also explicitly use `python3`, just like your alias. For example: `ExecStop=/usr/bin/python3 /path/to/you/work.py stop`
@@ -57,25 +58,28 @@ Below is a complete list of all available commands, assuming you have set up an 
 ### Work Hours Management
 These commands are for starting, stopping, and reviewing your work sessions.
 
-`start`
+`start`<br>
 Start a new work session timer. It also enables the automatic shutdown-catcher service and runs a check for task deadlines.
 ```bash
 work start
 ```
+<br>
 
-`stop`
+`stop`<br>
 Stops the current work session, calculates the duration, and logs it. This also disables the shutdown-catcher service.
 ```bash
 work stop
 ```
+<br>
 
-`status`
+`status`<br>
 Shows if a work session is currently active and displays the elapsed time since it started.
 ```bash
 work status
 ```
+<br>
 
-`log show`
+`log show`<br>
 Displays a summary of logged work hours for a specific week
 ```bash
 # Show hours for the current week (Monday to Sunday)
@@ -84,8 +88,9 @@ work log show
 # Show hours for last week
 work log show last
 ```
+<br>
 
-`log prune`
+`log prune`<br>
 Manually removes old log entries
 ```bash
 # Prune logs older than the default 6 months
@@ -94,18 +99,19 @@ work log prune
 # Prune logs older than 3 months
 work log prune --months 3
 ```
-
+<br>
 
 ### To-Do List Management
 These commands help you manage your tasks
 
-`todo list`
+`todo list`<br>
 Displays all your to-do items, neatly organized by group. Each item is given a temporary ID that can be used with the `rm` command.
 ```bash
 work todo list
 ```
+<br>
 
-`todo add`
+`todo add`<br>
 Adds a new task to your to-do list. You can optionally assign it to a group and give it a deadline.
 ```bash
 # Add a simple task to the 'General' group
@@ -118,8 +124,9 @@ work todo add "Design the new logo" --group "Project-Y"
 work todo add "Book flight tickets" --group "Travel" --deadline "2025-07-10"
 ```
 *Note: The deadline must be in `YYYY-MM-DD` format.*
+<br>
 
-`todo rm`
+`todo rm`<br>
 Removes a task from your list using the ID shown by the `todo list` command.
 ```bash
 # First, find the ID of the task you want to remove
@@ -128,8 +135,9 @@ work todo list
 # Then, remove the task with that ID (e.g., ID 3)
 work todo rm 3
 ```
+<br>
 
-`todo check`
+`todo check`<br>
 Manually runs a check for tasks that are overdue or have a deadline within the next two days. This same check is run automatically every time you use the `start` command.
 ```bash
 work todo check
