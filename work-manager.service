@@ -1,0 +1,31 @@
+# ~/.config/systemd/user/work-manager.service
+#
+# This service file enables the automatic "stop work" command on user session logout/shutdown.
+# It's a "oneshot" service that does nothing on start, but executes a command on stop.
+
+[Unit]
+Description=Work Manager Automatic Shutdown Stopper
+
+[Service]
+# This service type is for scripts that do one job and then exit.
+Type=oneshot
+# This is key. It tells systemd that the service should be considered "active"
+# even after its start command has completed.
+RemainAfterExit=true
+
+# The command to run when the service starts. We just use /bin/true because
+# we don't need to do anything when we run `work.py start`.
+ExecStart=/bin/true
+
+# The command to run when the service is stopped, which happens during
+# system shutdown or when we manually run `work.py stop`.
+#
+# !!! IMPORTANT !!!
+# You MUST replace '/home/your_user/bin/work.py' with the actual, absolute
+# path to where you saved the work.py script.
+ExecStop=/usr/bin/python3 ~/.local/bin/work.py stop
+
+[Install]
+# This ensures the service is part of the normal user session target,
+# so it will be properly started and stopped with the user's session.
+WantedBy=default.target
