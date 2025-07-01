@@ -281,6 +281,49 @@ def remove_todo(todo_id):
     print(f"Removed to-do: '{removed_todo['task']}'")
     list_todos()
 
+def edit_todo(todo_id, new_task=None, new_group=None, new_deadline=None):
+    """Edits an existing to-do item."""
+    todos = read_json_file(TODOS_FILE)
+    if not 0 < todo_id <= len(todos):
+        print(f"Error: Invalid ID '{todo_id}'. Use 'todo list' to see available IDs.")
+        sys.exit(1)
+
+    # Get the specific todo item (adjusting for 0-based index)
+    todo_item = todos[todo_id - 1]
+    
+    updated_fields = []
+
+    if new_task is not None:
+        todo_item['task'] = new_task
+        updated_fields.append("task")
+
+    if new_group is not None:
+        todo_item['group'] = new_group
+        updated_fields.append("group")
+
+    if new_deadline is not None:
+        if new_deadline.lower() in ['none', 'clear', 'remove']:
+            if 'deadline' in todo_item:
+                del todo_item['deadline']
+                updated_fields.append("deadline (removed)")
+        else:
+            # Validate deadline format
+            try:
+                datetime.strptime(new_deadline, "%Y-%m-%d")
+                todo_item['deadline'] = new_deadline
+                updated_fields.append("deadline")
+            except ValueError:
+                print(f"Error: Invalid deadline format for '{new_deadline}'. Please use YYYY-MM-DD or 'none'.")
+                sys.exit(1)
+
+    if not updated_fields:
+        print("No changes provided. Use --task, --group, or --deadline to edit the item.")
+        return
+
+    write_json_file(TODOS_FILE, todos)
+    print(f"\nUpdated to-do #{todo_id}: {', '.join(updated_fields)}")
+    list_todos()
+
 # --- MAIN EXECUTION & ARGUMENT PARSING ---
 
 def main():
@@ -310,12 +353,20 @@ def main():
 
     todo_subparsers.add_parser("list", help="List all to-do items.")
     todo_subparsers.add_parser("check", help="Check for overdue and upcoming deadlines.")
+    
     add_parser = todo_subparsers.add_parser("add", help="Add a new to-do item.")
     add_parser.add_argument("task", type=str, help="The description of the task.")
     add_parser.add_argument("-g", "--group", type=str, default="General", help="An optional group for the task.")
     add_parser.add_argument("-d", "--deadline", type=str, help="An optional deadline in YYYY-MM-DD format.")
+    
     rm_parser = todo_subparsers.add_parser("rm", help="Remove a to-do item by its ID.")
     rm_parser.add_argument("id", type=int, help="The ID of the to-do to remove (from 'todo list').")
+
+    edit_parser = todo_subparsers.add_parser("edit", help="Edit an existing to-do item.")
+    edit_parser.add_argument("id", type=int, help="The ID of the to-do to edit (from 'todo list').")
+    edit_parser.add_argument("-t", "--task", type=str, help="The new description for the task.")
+    edit_parser.add_argument("-g", "--group", type=str, help="The new group for the task.")
+    edit_parser.add_argument("-d", "--deadline", type=str, help="The new deadline (YYYY-MM-DD), or 'none' to remove it.")
 
     args = parser.parse_args()
 
@@ -341,6 +392,8 @@ def main():
             add_todo(args.task, args.group, args.deadline)
         elif args.todo_command == "rm":
             remove_todo(args.id)
+        elif args.todo_command == "edit":
+            edit_todo(args.id, args.task, args.group, args.deadline)
 
 if __name__ == "__main__":
     main()

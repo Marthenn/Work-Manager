@@ -137,6 +137,26 @@ work todo rm 3
 ```
 <br>
 
+`todo edit`<br>
+Modifies an existing task. You can change its text, group, or deadline.
+```bash
+# Change the task description for ID 5
+work todo edit 5 --task "Submit the final project report"
+
+# Move task 2 to a new group
+work todo edit 2 --group "Archive"
+
+# Add a deadline to task 7
+work todo edit 7 --deadline "2025-09-01"
+
+# Remove the deadline from task 7
+work todo edit 7 --deadline "none"
+
+# Change multiple fields at once for task 4
+work todo edit 4 --task "Follow up with client" --group "Urgent"
+```
+<br>
+
 `todo check`<br>
 Manually runs a check for tasks that are overdue or have a deadline within the next two days. This same check is run automatically every time you use the `start` command.
 ```bash
